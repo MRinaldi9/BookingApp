@@ -9,6 +9,13 @@
     "deprecation": {
       "severity": "warn"
     },
+    "indent": [
+      true,
+      "tabs"
+    ],
+    "variable-name": {
+      "options": "allow-leading-underscore"
+    },
     "import-blacklist": [
       true,
       "rxjs/Rx"
@@ -69,7 +76,11 @@
     "use-lifecycle-interface": true,
     "use-pipe-transform-interface": true,
     "one-variable-per-declaration": false,
-    "component-class-suffix": [true, "Page", "Component"],
+    "component-class-suffix": [
+      true,
+      "Page",
+      "Component"
+    ],
     "directive-class-suffix": true,
     "directive-selector": [
       true,
