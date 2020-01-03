@@ -21,7 +21,7 @@ export class OffersPage implements OnInit {
 		this.loadedOffers = this.placesService.places;
 	}
 	openMenu() {
-		this.menuCtrl.open('m1');
+		this.menuCtrl.toggle('m1');
 	}
 	onEdit(id: string, slidingItem: IonItemSliding) {
 		slidingItem.close();

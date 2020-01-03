@@ -1,18 +1,38 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Authenticate</ion-title>
+    <ion-title>{{isLogin?'Login':'Signup'}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-list>
-    <ion-item lines="inset">
-      <ion-label position="floating">E-mail</ion-label>
-      <ion-input></ion-input>
-    </ion-item>
-  </ion-list>
-  <div class="ion-float-end">
-    <ion-button color="primary" (click)="onLogin()">Login
-    </ion-button>
-  </div>
+  <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+    <ion-grid>
+      <ion-row>
+        <ion-col offset-md="3" size-md="6">
+          <ion-list>
+            <ion-item>
+              <ion-label class="ion-no-padding" position="floating">E-mail</ion-label>
+              <ion-input ngModel name="email" required email #emailCtrl="ngModel" type="email"></ion-input>
+            </ion-item>
+            <ion-item *ngIf="!emailCtrl.valid && emailCtrl.touched" class="validation" lines="none">
+              <ion-label color="danger">Should be a valid email
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Password</ion-label>
+              <ion-input ngModel name="password" #password="ngModel" required minlength="6" type="password"></ion-input>
+            </ion-item>
+            <ion-item *ngIf="!password.valid && password.touched" class="validation" lines="none">
+              <ion-label color="danger">Should be have at last 6 character
+              </ion-label>
+            </ion-item>
+          </ion-list>
+          <ion-button color="primary" type="button" fill="clear" expand="full" (click)="onSwitchAuthMode()">Switch To
+            {{isLogin?'Signup':'Login'}}</ion-button>
+          <ion-button [disabled]="!f.valid" color="primary" type="submit" (click)="onLogin(f)" expand="block">Login
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
 </ion-content>

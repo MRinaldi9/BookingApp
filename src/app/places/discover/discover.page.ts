@@ -24,7 +24,7 @@ export class DiscoverPage implements OnInit {
 	}
 
 	openMenu() {
-		this.menuCtrl.open('m1');
+		this.menuCtrl.toggle('m1');
 	}
 
 	onFilterUpdate(event: CustomEvent<SegmentChangeEventDetail>) {
