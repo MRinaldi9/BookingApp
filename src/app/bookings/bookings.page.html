@@ -12,7 +12,7 @@
     <ion-row>
       <ion-col size-md="6" offset-md="3">
         <ion-list>
-          <ion-item-sliding *ngFor="let booking of loadedBookings">
+          <ion-item-sliding *ngFor="let booking of loadedBookings" #slidingItem>
             <ion-item lines="full">
               <ion-label>
                 <h5>{{booking.placeTitle}}</h5>
@@ -20,7 +20,7 @@
               </ion-label>
             </ion-item>
             <ion-item-options>
-              <ion-item-option color="danger">
+              <ion-item-option color="danger" (click)="onCancelBooking(booking.id,slidingItem)">
                 Remove
                 <ion-icon name="trash" slot="top"></ion-icon>
               </ion-item-option>

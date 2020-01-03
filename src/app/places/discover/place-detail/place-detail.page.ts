@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, ModalController } from '@ionic/angular';
+import {
+	NavController,
+	ModalController,
+	ActionSheetController
+} from '@ionic/angular';
 import { PlacesService } from '../../../services/places.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Place } from '../../../models/place.model';
 import { CreateBookingComponent } from '../../../bookings/create-booking/create-booking.component';
 
@@ -15,12 +19,14 @@ export class PlaceDetailPage implements OnInit {
 	constructor(
 		private navCtrl: NavController,
 		private placesService: PlacesService,
-		private route: ActivatedRoute,
-		private modalCtrl: ModalController
+		private activeRoute: ActivatedRoute,
+		private modalCtrl: ModalController,
+		public actionSheetController: ActionSheetController,
+		public router: Router
 	) {}
 
 	ngOnInit() {
-		this.route.paramMap.subscribe(paramMap => {
+		this.activeRoute.paramMap.subscribe(paramMap => {
 			if (!paramMap.has('placeId')) {
 				this.navCtrl.navigateBack('/places/tabs/discover');
 				return;
@@ -29,6 +35,29 @@ export class PlaceDetailPage implements OnInit {
 		});
 	}
 	onBookPlace() {
+		this.actionSheetController
+			.create({
+				header: 'Choose an Action',
+				buttons: [
+					{
+						text: 'Select Date',
+						handler: () => {
+							this.openBookingModal('select');
+						}
+					},
+					{
+						text: 'Random Date',
+						handler: () => {
+							this.openBookingModal('random');
+						}
+					},
+					{ text: 'Cancel', role: 'cancel' }
+				]
+			})
+			.then(actionSheetEl => actionSheetEl.present());
+	}
+	openBookingModal(mode: 'select' | 'random') {
+		console.log(mode);
 		this.modalCtrl
 			.create({
 				component: CreateBookingComponent,
@@ -42,7 +71,7 @@ export class PlaceDetailPage implements OnInit {
 			})
 			.then(resulData => {
 				if (resulData.role === 'confirm') {
-					console.log(resulData.data);
+					this.navCtrl.navigateBack('/places/tabs/discover');
 				}
 			});
 	}

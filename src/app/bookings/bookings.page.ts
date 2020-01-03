@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuController } from '@ionic/angular';
+import { MenuController, IonItemSliding } from '@ionic/angular';
 import { BookingService } from '../services/booking.service';
 import { Booking } from '../models/booking.model';
 
@@ -22,5 +22,8 @@ export class BookingsPage implements OnInit {
 
 	openMenu() {
 		this.menuCtrl.open('m1');
+	}
+	onCancelBooking(placeId: string, slidingItem: IonItemSliding) {
+		slidingItem.close();
 	}
 }

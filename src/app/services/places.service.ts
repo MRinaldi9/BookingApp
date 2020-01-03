@@ -26,6 +26,20 @@ export class PlacesService {
 			'Something',
 			'https://staticfanpage.akamaized.net/wp-content/uploads/sites/12/2018/10/640px-torre_di_pisa_vista_dal_cortile_dellopera_del_duomo_06-638x425.jpg',
 			200
+		),
+		new Place(
+			'p2',
+			'Colosseum',
+			'One of the seven wonders of the world',
+			'https://www.cicerogo.com/itinerartis/wp-content/uploads/2017/09/Interno_Colosseo_04-e1536747707939.jpg',
+			200
+		),
+		new Place(
+			'p3',
+			"Pisa's Tower",
+			'Something',
+			'https://staticfanpage.akamaized.net/wp-content/uploads/sites/12/2018/10/640px-torre_di_pisa_vista_dal_cortile_dellopera_del_duomo_06-638x425.jpg',
+			200
 		)
 	];
 	constructor() {}
