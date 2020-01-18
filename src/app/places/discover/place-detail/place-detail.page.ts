@@ -61,7 +61,8 @@ export class PlaceDetailPage implements OnInit {
 			.create({
 				component: CreateBookingComponent,
 				componentProps: {
-					data: this.place
+					selectedPlace: this.place,
+					selectedMode: mode
 				}
 			})
 			.then(modal => {
@@ -69,6 +70,8 @@ export class PlaceDetailPage implements OnInit {
 				return modal.onDidDismiss();
 			})
 			.then(resulData => {
+				console.log(resulData.data);
+
 				if (resulData.role === 'confirm') {
 					this.navCtrl.navigateBack('/places/tabs/discover');
 				}
