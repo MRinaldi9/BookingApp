@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { PlacesService } from '../../../services/places.service';
+import { NavController } from '@ionic/angular';
 
 @Component({
 	selector: 'app-new-offer',
@@ -8,7 +10,10 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 })
 export class NewOfferPage implements OnInit {
 	form: FormGroup;
-	constructor() {}
+	constructor(
+		private placesService: PlacesService,
+		private navController: NavController
+	) {}
 
 	ngOnInit() {
 		this.form = new FormGroup({
@@ -39,5 +44,14 @@ export class NewOfferPage implements OnInit {
 		if (!this.form.valid) {
 			return;
 		}
+		const formValue = this.form.value;
+		this.placesService.addPlace(
+			formValue.title,
+			formValue.description,
+			+formValue.price,
+			new Date(formValue.dateFrom),
+			new Date(formValue.dateTo)
+		);
+		this.navController.back();
 	}
 }

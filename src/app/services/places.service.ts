@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Place } from '../models/place.model';
+import { AuthService } from './auth.service';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { take, map } from 'rxjs/operators';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class PlacesService {
-	private _places: Place[] = [
+	private _places = new BehaviorSubject<Place[]>([
 		new Place(
 			'p1',
 			'Manhattan Mansion',
@@ -13,7 +16,8 @@ export class PlacesService {
 			'https://imgs.6sqft.com/wp-content/uploads/2014/06/21042533/Carnegie-Mansion-nyc.jpg',
 			149.99,
 			new Date('2019-01-01'),
-			new Date('2019-12-31')
+			new Date('2019-12-31'),
+			''
 		),
 		new Place(
 			'p2',
@@ -22,7 +26,8 @@ export class PlacesService {
 			'https://www.cicerogo.com/itinerartis/wp-content/uploads/2017/09/Interno_Colosseo_04-e1536747707939.jpg',
 			200,
 			new Date('2019-01-01'),
-			new Date('2019-12-31')
+			new Date('2019-12-31'),
+			''
 		),
 		new Place(
 			'p3',
@@ -31,7 +36,8 @@ export class PlacesService {
 			'https://staticfanpage.akamaized.net/wp-content/uploads/sites/12/2018/10/640px-torre_di_pisa_vista_dal_cortile_dellopera_del_duomo_06-638x425.jpg',
 			200,
 			new Date('2019-01-01'),
-			new Date('2019-12-31')
+			new Date('2019-12-31'),
+			''
 		),
 		new Place(
 			'p2',
@@ -40,7 +46,8 @@ export class PlacesService {
 			'https://www.cicerogo.com/itinerartis/wp-content/uploads/2017/09/Interno_Colosseo_04-e1536747707939.jpg',
 			200,
 			new Date('2019-01-01'),
-			new Date('2019-12-31')
+			new Date('2019-12-31'),
+			''
 		),
 		new Place(
 			'p3',
@@ -49,16 +56,46 @@ export class PlacesService {
 			'https://staticfanpage.akamaized.net/wp-content/uploads/sites/12/2018/10/640px-torre_di_pisa_vista_dal_cortile_dellopera_del_duomo_06-638x425.jpg',
 			200,
 			new Date('2019-01-01'),
-			new Date('2019-12-31')
+			new Date('2019-12-31'),
+			''
 		)
-	];
-	constructor() {}
+	]);
+	constructor(private authService: AuthService) {}
 
-	get places() {
-		return [...this._places];
+	get places(): Observable<Place[]> {
+		return this._places.asObservable();
 	}
 
 	getPlace(id: string) {
-		return { ...this._places.find(place => place.id === id) };
+		return this.places.pipe(
+			take(1),
+			map(places => {
+				return { ...places.find(place => place.id === id) };
+			})
+		);
+	}
+
+	addPlace(
+		title: string,
+		description: string,
+		price: number,
+		dateFrom: Date,
+		dateTo: Date
+	) {
+		const imageUrl =
+			'https://www.cicerogo.com/itinerartis/wp-content/uploads/2017/09/Interno_Colosseo_04-e1536747707939.jpg';
+		const newPlace = new Place(
+			Math.random().toString(),
+			title,
+			description,
+			imageUrl,
+			price,
+			dateFrom,
+			dateTo,
+			this.authService.userId
+		);
+		this.places.pipe(take(1)).subscribe(places => {
+			this._places.next(places.concat(newPlace));
+		});
 	}
 }
