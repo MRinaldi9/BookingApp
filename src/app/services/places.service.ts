@@ -17,7 +17,7 @@ export class PlacesService {
 			149.99,
 			new Date('2019-01-01'),
 			new Date('2019-12-31'),
-			''
+			'1'
 		),
 		new Place(
 			'p2',
@@ -27,7 +27,7 @@ export class PlacesService {
 			200,
 			new Date('2019-01-01'),
 			new Date('2019-12-31'),
-			''
+			'1'
 		),
 		new Place(
 			'p3',
@@ -37,27 +37,27 @@ export class PlacesService {
 			200,
 			new Date('2019-01-01'),
 			new Date('2019-12-31'),
-			''
+			'1'
 		),
 		new Place(
-			'p2',
+			'p4',
 			'Colosseum',
 			'One of the seven wonders of the world',
 			'https://www.cicerogo.com/itinerartis/wp-content/uploads/2017/09/Interno_Colosseo_04-e1536747707939.jpg',
 			200,
 			new Date('2019-01-01'),
 			new Date('2019-12-31'),
-			''
+			'2'
 		),
 		new Place(
-			'p3',
+			'p5',
 			"Pisa's Tower",
 			'Something',
 			'https://staticfanpage.akamaized.net/wp-content/uploads/sites/12/2018/10/640px-torre_di_pisa_vista_dal_cortile_dellopera_del_duomo_06-638x425.jpg',
 			200,
 			new Date('2019-01-01'),
 			new Date('2019-12-31'),
-			''
+			'2'
 		)
 	]);
 	constructor(private authService: AuthService) {}

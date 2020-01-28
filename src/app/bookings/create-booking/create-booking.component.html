@@ -44,7 +44,7 @@
         <ion-col offset-md="3" size-md="3">
           <ion-item>
             <ion-label position="floating">From</ion-label>
-            <ion-datetime display-format="DD MMM YYYY" picker-format="YY MMM DD"
+            <ion-datetime display-format="DD MMM YYYY" picker-format="DD MMM YYYY"
               [min]="selectedPlace.availableFrom.toISOString()" [max]="selectedPlace.availableTo.toISOString()"
               [ngModel]="startDate" name="date-from" #startDateCtrl="ngModel">
             </ion-datetime>
