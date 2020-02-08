@@ -13,6 +13,7 @@ import { ThrowStmt } from '@angular/compiler';
 })
 export class OffersPage implements OnInit, OnDestroy {
 	loadedOffers: Place[];
+	isLoading = false;
 	private placesSub: Subscription;
 	constructor(
 		private placesService: PlacesService,
@@ -29,6 +30,13 @@ export class OffersPage implements OnInit, OnDestroy {
 		this.placesSub = this.placesService.places.subscribe(
 			offers => (this.loadedOffers = offers)
 		);
+	}
+
+	ionViewWillEnter() {
+		this.isLoading = true;
+		this.placesService.fetchPlaces().subscribe(_ => {
+			this.isLoading = false;
+		});
 	}
 	openMenu() {
 		this.menuCtrl.toggle('m1');

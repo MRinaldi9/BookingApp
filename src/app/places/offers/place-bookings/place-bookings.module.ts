@@ -9,12 +9,12 @@ import { PlaceBookingsPageRoutingModule } from './place-bookings-routing.module'
 import { PlaceBookingsPage } from './place-bookings.page';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    PlaceBookingsPageRoutingModule
-  ],
-  declarations: [PlaceBookingsPage]
+	imports: [
+		CommonModule,
+		FormsModule,
+		IonicModule,
+		PlaceBookingsPageRoutingModule
+	],
+	declarations: [PlaceBookingsPage]
 })
 export class PlaceBookingsPageModule {}

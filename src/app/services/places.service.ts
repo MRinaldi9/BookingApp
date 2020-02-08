@@ -2,68 +2,40 @@ import { Injectable } from '@angular/core';
 import { Place } from '../models/place.model';
 import { AuthService } from './auth.service';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { take, map, tap, delay } from 'rxjs/operators';
+import { take, map, tap, delay, switchMap, first } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { OfferedPlaces } from '../models/offeredPlaces.model';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class PlacesService {
-	private _places = new BehaviorSubject<Place[]>([
-		new Place(
-			'p1',
-			'Manhattan Mansion',
-			'In the heart of New York City',
-			'https://imgs.6sqft.com/wp-content/uploads/2014/06/21042533/Carnegie-Mansion-nyc.jpg',
-			149.99,
-			new Date('2019-01-01'),
-			new Date('2019-12-31'),
-			'1'
-		),
-		new Place(
-			'p2',
-			'Colosseum',
-			'One of the seven wonders of the world',
-			'https://www.cicerogo.com/itinerartis/wp-content/uploads/2017/09/Interno_Colosseo_04-e1536747707939.jpg',
-			200,
-			new Date('2019-01-01'),
-			new Date('2019-12-31'),
-			'1'
-		),
-		new Place(
-			'p3',
-			"Pisa's Tower",
-			'Something',
-			'https://staticfanpage.akamaized.net/wp-content/uploads/sites/12/2018/10/640px-torre_di_pisa_vista_dal_cortile_dellopera_del_duomo_06-638x425.jpg',
-			200,
-			new Date('2019-01-01'),
-			new Date('2019-12-31'),
-			'1'
-		),
-		new Place(
-			'p4',
-			'Colosseum',
-			'One of the seven wonders of the world',
-			'https://www.cicerogo.com/itinerartis/wp-content/uploads/2017/09/Interno_Colosseo_04-e1536747707939.jpg',
-			200,
-			new Date('2019-01-01'),
-			new Date('2019-12-31'),
-			'2'
-		),
-		new Place(
-			'p5',
-			"Pisa's Tower",
-			'Something',
-			'https://staticfanpage.akamaized.net/wp-content/uploads/sites/12/2018/10/640px-torre_di_pisa_vista_dal_cortile_dellopera_del_duomo_06-638x425.jpg',
-			200,
-			new Date('2019-01-01'),
-			new Date('2019-12-31'),
-			'2'
-		)
-	]);
-	constructor(private authService: AuthService) {}
+	private _places = new BehaviorSubject<Place[]>([]);
+	constructor(private authService: AuthService, private http: HttpClient) {}
 
 	get places(): Observable<Place[]> {
 		return this._places.asObservable();
+	}
+
+	fetchPlaces(): Observable<Place[]> {
+		return this.http
+			.get<OfferedPlaces>(`${environment.apiUrl}/offered-places.json`)
+			.pipe(
+				map(resData => {
+					const places: Place[] = [];
+					for (const key in resData) {
+						if (resData.hasOwnProperty(key)) {
+							resData[key].id = key;
+							places.push(resData[key]);
+						}
+					}
+					return places;
+				}),
+				tap(places => {
+					this._places.next(places);
+				})
+			);
 	}
 
 	getPlace(id: string) {
@@ -84,8 +56,10 @@ export class PlacesService {
 	) {
 		const imageUrl =
 			'https://www.cicerogo.com/itinerartis/wp-content/uploads/2017/09/Interno_Colosseo_04-e1536747707939.jpg';
+		let generatedId = null;
+
 		const newPlace = new Place(
-			Math.random().toString(),
+			null,
 			title,
 			description,
 			imageUrl,
@@ -94,25 +68,41 @@ export class PlacesService {
 			dateTo,
 			this.authService.userId
 		);
-		return this.places.pipe(
-			take(1),
-			delay(1000),
-			tap(places => {
-				this._places.next(places.concat(newPlace));
+		return this.http
+			.post<{ name: string }>(`${environment.apiUrl}/offered-places.json`, {
+				...newPlace
 			})
-		);
+			.pipe(
+				switchMap(respData => {
+					generatedId = respData.name;
+					return this.places;
+				}),
+				first(),
+				tap(places => {
+					newPlace.id = generatedId;
+					this._places.next(places.concat(newPlace));
+				})
+			);
 	}
 
 	updatePlace(placeId: string, title: string, description: string) {
+		let placeToUpdate: Place;
 		return this.places.pipe(
-			take(1),
-			delay(1000),
-			tap(places => {
-				const updatedPlace = places.find(place => {
+			first(),
+			switchMap<Place[], Observable<Place>>(places => {
+				placeToUpdate = places.find(place => {
 					return place.id === placeId;
 				});
-				updatedPlace.description = description;
-				updatedPlace.title = title;
+				placeToUpdate.description = description;
+				placeToUpdate.title = title;
+				return this.http.put<Place>(
+					`${environment.apiUrl}/offered-places/${placeId}.json`,
+					{ ...placeToUpdate, id: null }
+				);
+			}),
+			tap(place => {
+				const actualPlaces = this._places.value;
+				this._places.next(actualPlaces.concat(place));
 			})
 		);
 	}
