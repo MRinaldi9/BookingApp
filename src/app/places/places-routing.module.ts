@@ -22,7 +22,7 @@ const routes: Routes = [
 	},
 	{
 		path: '',
-		redirectTo: '/places/tabs'
+		redirectTo: '/places/tabs/discover'
 	}
 ];
 

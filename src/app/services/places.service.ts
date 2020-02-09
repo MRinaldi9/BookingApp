@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Place } from '../models/place.model';
 import { AuthService } from './auth.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { take, map, tap, delay, switchMap, first } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
@@ -39,6 +39,22 @@ export class PlacesService {
 	}
 
 	getPlace(id: string) {
+		return this.http
+			.get<Place>(`${environment.apiUrl}/offered-places/${id}.json`)
+			.pipe(
+				map(placeData => {
+					return new Place(
+						id,
+						placeData.title,
+						placeData.description,
+						placeData.imageUrl,
+						placeData.price,
+						new Date(placeData.availableFrom),
+						new Date(placeData.availableTo),
+						placeData.userId
+					);
+				})
+			);
 		return this.places.pipe(
 			take(1),
 			map(places => {
@@ -86,23 +102,39 @@ export class PlacesService {
 	}
 
 	updatePlace(placeId: string, title: string, description: string) {
-		let placeToUpdate: Place;
+		let updatedPlaces: Place[];
 		return this.places.pipe(
 			first(),
-			switchMap<Place[], Observable<Place>>(places => {
-				placeToUpdate = places.find(place => {
-					return place.id === placeId;
-				});
-				placeToUpdate.description = description;
-				placeToUpdate.title = title;
-				return this.http.put<Place>(
+			switchMap(places => {
+				if (!places || places.length <= 0) {
+					return this.fetchPlaces();
+				} else {
+					return of(places);
+				}
+			}),
+			switchMap(places => {
+				const updatedPlaceIndex = places.findIndex(
+					place => place.id === placeId
+				);
+				updatedPlaces = [...places];
+				const oldPlace = updatedPlaces[updatedPlaceIndex];
+				updatedPlaces[updatedPlaceIndex] = new Place(
+					oldPlace.id,
+					title,
+					description,
+					oldPlace.imageUrl,
+					oldPlace.price,
+					oldPlace.availableFrom,
+					oldPlace.availableTo,
+					oldPlace.userId
+				);
+				return this.http.put(
 					`${environment.apiUrl}/offered-places/${placeId}.json`,
-					{ ...placeToUpdate, id: null }
+					{ ...updatedPlaces[updatedPlaceIndex], id: null }
 				);
 			}),
-			tap(place => {
-				const actualPlaces = this._places.value;
-				this._places.next(actualPlaces.concat(place));
+			tap(_ => {
+				this._places.next(updatedPlaces);
 			})
 		);
 	}
