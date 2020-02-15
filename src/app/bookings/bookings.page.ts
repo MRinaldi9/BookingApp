@@ -1,56 +1,65 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import {
-	MenuController,
-	IonItemSliding,
-	LoadingController
+  MenuController,
+  IonItemSliding,
+  LoadingController
 } from '@ionic/angular';
 import { BookingService } from '../services/booking.service';
 import { Booking } from '../models/booking.model';
 import { Subscription } from 'rxjs';
 
 @Component({
-	selector: 'app-bookings',
-	templateUrl: './bookings.page.html',
-	styleUrls: ['./bookings.page.scss']
+  selector: 'app-bookings',
+  templateUrl: './bookings.page.html',
+  styleUrls: ['./bookings.page.scss']
 })
 export class BookingsPage implements OnInit, OnDestroy {
-	loadedBookings: Booking[];
-	private bookingsSub: Subscription;
+  loadedBookings: Booking[];
+  isLoading = false;
+  private bookingsSub: Subscription;
 
-	constructor(
-		private menuCtrl: MenuController,
-		private bookingService: BookingService,
-		private loadingController: LoadingController
-	) {}
+  constructor(
+    private menuCtrl: MenuController,
+    private bookingService: BookingService,
+    private loadingController: LoadingController
+  ) {}
 
-	ngOnDestroy(): void {
-		if (this.bookingsSub) {
-			this.bookingsSub.unsubscribe();
-		}
-	}
+  ngOnDestroy(): void {
+    if (this.bookingsSub) {
+      this.bookingsSub.unsubscribe();
+    }
+  }
 
-	ngOnInit() {
-		this.bookingsSub = this.bookingService.bookings.subscribe(
-			bookings => (this.loadedBookings = bookings)
-		);
-	}
+  ngOnInit() {
+    this.bookingsSub = this.bookingService.bookings.subscribe(
+      bookings => (this.loadedBookings = bookings)
+    );
+  }
 
-	openMenu() {
-		this.menuCtrl.open('m1');
-	}
+  ionViewWillEnter() {
+    this.isLoading = true;
+    this.bookingService.fetchBookings().subscribe(bookings => {
+      this.isLoading = false;
+      this.loadedBookings = bookings;
+    });
+  }
 
-	onCancelBooking(bookingId: string, slidingItem: IonItemSliding) {
-		slidingItem.close();
-		this.loadingController
-			.create({
-				message: 'Removing Booking...',
-				spinner: 'dots'
-			})
-			.then(loadingEl => {
-				loadingEl.present();
-				this.bookingService.cancelBooking(bookingId).subscribe(_ => {
-					loadingEl.dismiss();
-				});
-			});
-	}
+  openMenu() {
+    this.menuCtrl.open('m1');
+  }
+
+  onCancelBooking(bookingId: string, slidingItem: IonItemSliding) {
+    slidingItem.close();
+    this.loadingController
+      .create({
+        message: 'Removing Booking...',
+        spinner: 'dots'
+      })
+      .then(loadingEl => {
+        loadingEl.present();
+        this.bookingService.cancelBooking(bookingId).subscribe(_ => {
+          loadingEl.dismiss();
+        });
+      });
+  }
 }

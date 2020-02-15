@@ -2,61 +2,105 @@ import { Injectable } from '@angular/core';
 import { Booking } from '../models/booking.model';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from './auth.service';
-import { first, tap, delay } from 'rxjs/operators';
+import { first, tap, delay, switchMap, map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { BookingData } from '../models/bookingData.model';
 
 @Injectable({
-	providedIn: 'root'
+  providedIn: 'root'
 })
 export class BookingService {
-	constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private http: HttpClient) {}
 
-	private _bookings = new BehaviorSubject<Booking[]>([]);
+  private _bookings = new BehaviorSubject<Booking[]>([]);
 
-	get bookings() {
-		return this._bookings.asObservable();
-	}
+  get bookings() {
+    return this._bookings.asObservable();
+  }
 
-	addBooking(
-		placeId: string,
-		placeTitle: string,
-		placeImage: string,
-		firstName: string,
-		lastName: string,
-		guestNumber: string,
-		dateFrom: Date,
-		dateTo: Date
-	) {
-		const newBooking: Booking = {
-			id: Math.random.toString(),
-			placeId,
-			placeTitle,
-			placeImage,
-			firstName,
-			lastName,
-			guestNumber: +guestNumber,
-			bookedFrom: dateFrom,
-			bookedTo: dateTo,
-			userId: this.authService.userId
-		};
+  fetchBookings() {
+    return this.http
+      .get<BookingData>(
+        `${environment.apiUrl}/bookings.json?orderBy="userId"&equalTo="${this.authService.userId}"`
+      )
+      .pipe(
+        map(bookingsData => {
+          const bookings: Booking[] = [];
+          for (const key in bookingsData) {
+            if (bookingsData.hasOwnProperty(key)) {
+              bookings.push({
+                id: key,
+                firstName: bookingsData[key].firstName,
+                guestNumber: bookingsData[key].guestNumber,
+                lastName: bookingsData[key].lastName,
+                placeImage: bookingsData[key].placeImage,
+                placeId: bookingsData[key].placeId,
+                userId: bookingsData[key].placeId,
+                placeTitle: bookingsData[key].placeTitle,
+                bookedFrom: new Date(bookingsData[key].bookedFrom),
+                bookedTo: new Date(bookingsData[key].bookedTo)
+              } as Booking);
+            }
+          }
+          return bookings;
+        }),
+        tap(bookings => this._bookings.next(bookings))
+      );
+  }
 
-		return this.bookings.pipe(
-			first(),
-			delay(1000),
-			tap(bookings => {
-				this._bookings.next(bookings.concat(newBooking));
-			})
-		);
-	}
+  addBooking(
+    placeId: string,
+    placeTitle: string,
+    placeImage: string,
+    firstName: string,
+    lastName: string,
+    guestNumber: string,
+    dateFrom: Date,
+    dateTo: Date
+  ) {
+    let generatedId: string;
+    const newBooking: Booking = {
+      id: '',
+      placeId,
+      placeTitle,
+      placeImage,
+      firstName,
+      lastName,
+      guestNumber: +guestNumber,
+      bookedFrom: dateFrom,
+      bookedTo: dateTo,
+      userId: this.authService.userId
+    };
+    return this.http
+      .post<Booking>(`${environment.apiUrl}/bookings.json`, {
+        ...newBooking,
+        id: null
+      } as Booking)
+      .pipe(
+        switchMap(respData => {
+          generatedId = respData.id;
+          return this.bookings;
+        }),
+        first(),
+        tap(bookings => {
+          newBooking.id = generatedId;
+          this._bookings.next(bookings.concat(newBooking));
+        })
+      );
+  }
 
-	cancelBooking(bookingId: string) {
-		return this.bookings.pipe(
-			first(),
-			delay(1000),
-			tap(bookings => {
-				this._bookings.next(
-					bookings.filter(booking => booking.id !== bookingId)
-				);
-			})
-		);
-	}
+  cancelBooking(bookingId: string) {
+    return this.http
+      .delete(`${environment.apiUrl}/bookings/${bookingId}.json`)
+      .pipe(
+        switchMap(_ => this.bookings),
+        first(),
+        tap(bookings => {
+          this._bookings.next(
+            bookings.filter(booking => booking.id !== bookingId)
+          );
+        })
+      );
+  }
 }
