@@ -9,12 +9,12 @@ import { EditOfferPageRoutingModule } from './edit-offer-routing.module';
 import { EditOfferPage } from './edit-offer.page';
 
 @NgModule({
-	imports: [
-		CommonModule,
-		ReactiveFormsModule,
-		IonicModule,
-		EditOfferPageRoutingModule
-	],
-	declarations: [EditOfferPage]
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    IonicModule,
+    EditOfferPageRoutingModule
+  ],
+  declarations: [EditOfferPage]
 })
 export class EditOfferPageModule {}
