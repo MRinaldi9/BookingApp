@@ -1,18 +1,19 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import {
-  NavController,
-  ModalController,
-  ActionSheetController,
-  AlertController
-} from '@ionic/angular';
-import { PlacesService } from '../../../services/places.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Place } from '../../../models/place.model';
-import { CreateBookingComponent } from '../../../bookings/create-booking/create-booking.component';
+import {
+  ActionSheetController,
+  AlertController,
+  LoadingController,
+  ModalController,
+  NavController,
+} from '@ionic/angular';
 import { Subscription } from 'rxjs';
-import { BookingService } from '../../../services/booking.service';
-import { LoadingController } from '@ionic/angular';
-import { AuthService } from '../../../services/auth.service';
+
+import { CreateBookingComponent } from '../../../bookings/create-booking/create-booking.component';
+import { Place } from '../../../shared/models/place.model';
+import { AuthService } from '../../../shared/services/auth.service';
+import { BookingService } from '../../../shared/services/booking.service';
+import { PlacesService } from '../../../shared/services/places.service';
 
 @Component({
   selector: 'app-place-detail',

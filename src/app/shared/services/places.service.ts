@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Place } from '../models/place.model';
 import { AuthService } from './auth.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { take, map, tap, delay, switchMap, first } from 'rxjs/operators';
+import { map, tap, switchMap, first } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { OfferedPlaces } from '../models/offeredPlaces.model';

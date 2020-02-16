@@ -1,12 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import {
-  MenuController,
-  IonItemSliding,
-  LoadingController
-} from '@ionic/angular';
-import { BookingService } from '../services/booking.service';
-import { Booking } from '../models/booking.model';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { IonItemSliding, LoadingController, MenuController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+
+import { Booking } from '../shared/models/booking.model';
+import { BookingService } from '../shared/services/booking.service';
 
 @Component({
   selector: 'app-bookings',
