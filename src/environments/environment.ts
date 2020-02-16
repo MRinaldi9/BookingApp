@@ -3,9 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
-  apiUrl: 'https://bookingapp-84b5a.firebaseio.com',
-  apiGoogle: 'AIzaSyClr3u85qI6NJk47PP-gaIdNyM9S7tYND0'
+  production: false
 };
 
 /*

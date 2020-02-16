@@ -6,6 +6,7 @@ import { first, tap, switchMap, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { BookingData } from '../models/bookingData.model';
+import { ApiURL } from 'src/app/apiURL';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class BookingService {
   fetchBookings() {
     return this.http
       .get<BookingData>(
-        `${environment.apiUrl}/bookings.json?orderBy="userId"&equalTo="${this.authService.userId}"`
+        `${ApiURL.APIURLDB}/bookings.json?orderBy="userId"&equalTo="${this.authService.userId}"`
       )
       .pipe(
         map(bookingsData => {
@@ -73,7 +74,7 @@ export class BookingService {
       userId: this.authService.userId
     };
     return this.http
-      .post<Booking>(`${environment.apiUrl}/bookings.json`, {
+      .post<Booking>(`${ApiURL.APIURLDB}/bookings.json`, {
         ...newBooking,
         id: null
       } as Booking)
@@ -92,7 +93,7 @@ export class BookingService {
 
   cancelBooking(bookingId: string) {
     return this.http
-      .delete(`${environment.apiUrl}/bookings/${bookingId}.json`)
+      .delete(`${ApiURL.APIURLDB}/bookings/${bookingId}.json`)
       .pipe(
         switchMap(_ => this.bookings),
         first(),

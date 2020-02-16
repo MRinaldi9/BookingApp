@@ -8,7 +8,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { environment } from 'src/environments/environment';
+import { ApiURL } from 'src/app/apiURL';
 
 interface Google {
   maps: typeof google.maps;
@@ -54,7 +54,7 @@ export class MapModalComponent implements OnInit, AfterViewInit {
     }
     return new Promise<Google['maps']>((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${environment.apiGoogle}`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${ApiURL.APIKEYGOOGLE}`;
       script.async = true;
       script.defer = true;
       document.body.appendChild(script);

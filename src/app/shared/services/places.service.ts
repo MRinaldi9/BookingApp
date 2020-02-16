@@ -6,6 +6,7 @@ import { map, tap, switchMap, first } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { OfferedPlaces } from '../models/offeredPlaces.model';
+import { ApiURL } from 'src/app/apiURL';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class PlacesService {
 
   fetchPlaces(): Observable<Place[]> {
     return this.http
-      .get<OfferedPlaces>(`${environment.apiUrl}/offered-places.json`)
+      .get<OfferedPlaces>(`${ApiURL.APIURLDB}/offered-places.json`)
       .pipe(
         map(resData => {
           const places: Place[] = [];
@@ -40,7 +41,7 @@ export class PlacesService {
 
   getPlace(id: string) {
     return this.http
-      .get<Place>(`${environment.apiUrl}/offered-places/${id}.json`)
+      .get<Place>(`${ApiURL.APIURLDB}/offered-places/${id}.json`)
       .pipe(
         map(placeData => {
           return new Place(
@@ -79,7 +80,7 @@ export class PlacesService {
       this.authService.userId
     );
     return this.http
-      .post<{ name: string }>(`${environment.apiUrl}/offered-places.json`, {
+      .post<{ name: string }>(`${ApiURL.APIURLDB}/offered-places.json`, {
         ...newPlace
       })
       .pipe(
@@ -123,7 +124,7 @@ export class PlacesService {
           oldPlace.userId
         );
         return this.http.put(
-          `${environment.apiUrl}/offered-places/${placeId}.json`,
+          `${ApiURL.APIURLDB}/offered-places/${placeId}.json`,
           { ...updatedPlaces[updatedPlaceIndex], id: null }
         );
       }),
