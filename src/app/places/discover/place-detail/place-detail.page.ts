@@ -5,7 +5,7 @@ import {
   AlertController,
   LoadingController,
   ModalController,
-  NavController,
+  NavController
 } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
@@ -14,6 +14,7 @@ import { Place } from '../../../shared/models/place.model';
 import { AuthService } from '../../../shared/services/auth.service';
 import { BookingService } from '../../../shared/services/booking.service';
 import { PlacesService } from '../../../shared/services/places.service';
+import { MapModalComponent } from '../../../shared/map-modal/map-modal.component';
 
 @Component({
   selector: 'app-place-detail',
@@ -140,6 +141,25 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
                 });
             });
         }
+      });
+  }
+
+  onShowFullMap() {
+    this.modalCtrl
+      .create({
+        component: MapModalComponent,
+        componentProps: {
+          mapCenter: {
+            lat: this.place.location.lat,
+            lng: this.place.location.lng
+          } as google.maps.LatLngLiteral,
+          selectable: false,
+          closeButtonText: 'Close',
+          title: this.place.location.address
+        }
+      })
+      .then(modelEl => {
+        modelEl.present();
       });
   }
 }

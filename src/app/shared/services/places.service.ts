@@ -1,12 +1,13 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { first, map, switchMap, tap } from 'rxjs/operators';
+import { APIURL } from 'src/app/apiURL';
+
+import { OfferedPlaces } from '../models/offeredPlaces.model';
 import { Place } from '../models/place.model';
 import { AuthService } from './auth.service';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, tap, switchMap, first } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { OfferedPlaces } from '../models/offeredPlaces.model';
-import { ApiURL } from 'src/app/apiURL';
+import { PlaceLocation } from '../models/location.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class PlacesService {
 
   fetchPlaces(): Observable<Place[]> {
     return this.http
-      .get<OfferedPlaces>(`${ApiURL.APIURLDB}/offered-places.json`)
+      .get<OfferedPlaces>(`${APIURL.apiUrlDb}/offered-places.json`)
       .pipe(
         map(resData => {
           const places: Place[] = [];
@@ -41,7 +42,7 @@ export class PlacesService {
 
   getPlace(id: string) {
     return this.http
-      .get<Place>(`${ApiURL.APIURLDB}/offered-places/${id}.json`)
+      .get<Place>(`${APIURL.apiUrlDb}/offered-places/${id}.json`)
       .pipe(
         map(placeData => {
           return new Place(
@@ -52,7 +53,8 @@ export class PlacesService {
             placeData.price,
             new Date(placeData.availableFrom),
             new Date(placeData.availableTo),
-            placeData.userId
+            placeData.userId,
+            placeData.location
           );
         })
       );
@@ -63,7 +65,8 @@ export class PlacesService {
     description: string,
     price: number,
     dateFrom: Date,
-    dateTo: Date
+    dateTo: Date,
+    location: PlaceLocation
   ) {
     const imageUrl =
       'https://www.cicerogo.com/itinerartis/wp-content/uploads/2017/09/Interno_Colosseo_04-e1536747707939.jpg';
@@ -77,10 +80,11 @@ export class PlacesService {
       price,
       dateFrom,
       dateTo,
-      this.authService.userId
+      this.authService.userId,
+      location
     );
     return this.http
-      .post<{ name: string }>(`${ApiURL.APIURLDB}/offered-places.json`, {
+      .post<{ name: string }>(`${APIURL.apiUrlDb}/offered-places.json`, {
         ...newPlace
       })
       .pipe(
@@ -121,10 +125,11 @@ export class PlacesService {
           oldPlace.price,
           oldPlace.availableFrom,
           oldPlace.availableTo,
-          oldPlace.userId
+          oldPlace.userId,
+          oldPlace.location
         );
         return this.http.put(
-          `${ApiURL.APIURLDB}/offered-places/${placeId}.json`,
+          `${APIURL.apiUrlDb}/offered-places/${placeId}.json`,
           { ...updatedPlaces[updatedPlaceIndex], id: null }
         );
       }),

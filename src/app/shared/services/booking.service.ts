@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
-import { Booking } from '../models/booking.model';
-import { BehaviorSubject } from 'rxjs';
-import { AuthService } from './auth.service';
-import { first, tap, switchMap, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { first, map, switchMap, tap } from 'rxjs/operators';
+import { APIURL } from 'src/app/apiURL';
+
+import { Booking } from '../models/booking.model';
 import { BookingData } from '../models/bookingData.model';
-import { ApiURL } from 'src/app/apiURL';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +23,7 @@ export class BookingService {
   fetchBookings() {
     return this.http
       .get<BookingData>(
-        `${ApiURL.APIURLDB}/bookings.json?orderBy="userId"&equalTo="${this.authService.userId}"`
+        `${APIURL.apiUrlDb}/bookings.json?orderBy="userId"&equalTo="${this.authService.userId}"`
       )
       .pipe(
         map(bookingsData => {
@@ -74,7 +74,7 @@ export class BookingService {
       userId: this.authService.userId
     };
     return this.http
-      .post<Booking>(`${ApiURL.APIURLDB}/bookings.json`, {
+      .post<Booking>(`${APIURL.apiUrlDb}/bookings.json`, {
         ...newBooking,
         id: null
       } as Booking)
@@ -93,7 +93,7 @@ export class BookingService {
 
   cancelBooking(bookingId: string) {
     return this.http
-      .delete(`${ApiURL.APIURLDB}/bookings/${bookingId}.json`)
+      .delete(`${APIURL.apiUrlDb}/bookings/${bookingId}.json`)
       .pipe(
         switchMap(_ => this.bookings),
         first(),
